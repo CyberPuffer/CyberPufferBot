@@ -1,0 +1,12 @@
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# VSCode files
+.vscode/
+
+# Config files
+conf/*
+!/conf/*.sample.*
+database/
