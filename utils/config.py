@@ -8,9 +8,9 @@ logger = log.get_logger(name = 'Config')
 if (path.exists('conf/config.ini')):
     config = ConfigParser()
     config.read('conf/config.ini')
-    proxy_url = config.get('Bot', 'proxy_url', fallback='')
-    database_path = config.get('Bot', 'database_path')
-    telegram_api_secret = config.get('Telegram', 'telegram_api_secret')
+    proxy_url = config.get('Bot', 'proxy_url', fallback=None)
+    database_path = config.get('Bot', 'database_path', fallback=None)
+    telegram_api_secret = config.get('Telegram', 'telegram_api_secret', fallback=None)
 
 proxy_url = environ.get('HTTPS_PROXY') or proxy_url
 database_path = environ.get('DATABASE_PATH') or database_path
