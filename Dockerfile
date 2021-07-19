@@ -10,5 +10,5 @@ RUN apk add --no-cache git py3-pip build-base python3-dev &&\
     apk del build-base python3-dev git
 
 WORKDIR /var/bot
-CMD ["/var/bot/bot.py"]
+CMD ["/var/bot/main.py"]
 ENTRYPOINT ["python3"]

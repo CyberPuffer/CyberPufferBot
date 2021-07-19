@@ -1,9 +1,10 @@
 from utils import log
-from jsoncomment import JsonComment
+from json import load
 
-json = JsonComment()
 logger = log.get_logger(name = 'Keyword')
-word_list = json.loadf('conf/keyword_list.json')
+
+with open("conf/keyword_list.json", "r") as fp:
+    word_list = load(fp)
 
 class reply:
     def __init__(self, message) -> None:

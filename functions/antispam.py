@@ -16,8 +16,8 @@ def anti_tgstat_bot(update, context):
         check3 = new_user.username is None
         if (check1 & check2 & check3):
             context.bot.kick_chat_member(chat_id, new_user.id)
-            logger.warning("User {user_id} is suspicious and banned.".format(user_id = new_user.id))
+            logger.info("User {user_id} is suspicious and banned.".format(user_id = new_user.id))
         else:
-            logger.warning("User {user_id} subscribed.".format(user_id = new_user.id))
+            logger.info("User {user_id} subscribed.".format(user_id = new_user.id))
 
 channel_handler = ChatMemberHandler(anti_tgstat_bot, chat_member_types = 1)

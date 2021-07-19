@@ -1,4 +1,3 @@
-jsoncomment
 python-telegram-bot
 coloredlogs
 regex

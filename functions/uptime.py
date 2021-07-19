@@ -8,6 +8,7 @@ def uptime(update, context):
     time_text = format_timespan(int(time_now - globals.time_start))\
         .replace('years','年').replace('year','年')\
         .replace('months','月').replace('month','月')\
+        .replace('weeks','周').replace('week','周')\
         .replace('days','日').replace('day','日')\
         .replace('hours','小时').replace('hour','小时')\
         .replace('minutes','分钟').replace('minute','分钟')\

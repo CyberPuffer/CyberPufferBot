@@ -33,7 +33,7 @@ def query(user_id, attrib):
 	result = cur.execute("SELECT {attrib} FROM users WHERE id = {user_id}".format(attrib=attrib, user_id=user_id)).fetchone()
 	if result == None:
 		init_user(user_id)
-		logger.warning("New user found: {user_id}".format(user_id = user_id))
+		logger.info("New user found: {user_id}".format(user_id = user_id))
 		return None
 	con.commit()
 	con.close()
