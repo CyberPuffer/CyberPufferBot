@@ -3,7 +3,7 @@ from utils import log, config
 logger = log.get_logger(name = 'Keyword')
 
 class reply:
-    def __init__(self, message) -> None:
+    def __init__(self, message):
         self.type = None
         for word in config.word_list:
             if word in message:

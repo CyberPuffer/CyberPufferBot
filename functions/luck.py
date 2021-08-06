@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from binascii import crc32, unhexlify
 
 def get_luck(uid, date):
@@ -7,5 +8,5 @@ def get_luck(uid, date):
     fmt = '%%0%dx' % (width // 4)
     s = unhexlify(fmt % seed)
     luck_level = crc32(s) % 5 + 1
-    luck_text = '当前人品：{}{}'.format('★' * luck_level, '☆' * (5 - luck_level))
+    luck_text = u'当前人品：{}{}'.format(u'★' * luck_level, u'☆' * (5 - luck_level))
     return luck_text
