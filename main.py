@@ -1,18 +1,24 @@
 from utils import globals, config, log, functions
+from queue import Queue
+from telegram import Bot, Update
+from telegram.ext import Dispatcher
+from telegram.utils.request import Request
 
 logger = log.get_logger(name = 'Bot')
 
+# Use global varible cache to optimize speed
+dispatcher = None
+
 # Entrypoint for GCE Cloud Functions
 def webhook(request):
-    from queue import Queue
-    from telegram import Bot, Update
-    from telegram.ext import Dispatcher
-    from telegram.utils.request import Request
     globals.webhook = True
     bot = Bot(token=config.telegram_api_secret)
     bot._request=Request(proxy_url=config.proxy_url)
-    dispatcher = Dispatcher(bot, Queue())
-    functions.load_funcs(dispatcher)
+
+    global dispatcher
+    if not dispatcher:
+        dispatcher = Dispatcher(bot, Queue())
+        functions.load_funcs(dispatcher)
 
     if request.method == "POST":
         update_text = request.get_json(force=True)
