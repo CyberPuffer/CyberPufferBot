@@ -17,6 +17,7 @@ if (path.exists('conf/config.ini')):
     telegram_api_secret = config.get('Telegram', 'telegram_api_secret')
     enabled_functions = config.get('Bot', 'enabled_functions')
     auto_delete_timer = config.get('Bot', 'auto_delete_timer')
+    test_user_id = config.get('Test', 'test_user_id')
 proxy_url = environ.get('HTTPS_PROXY') or proxy_url
 database_path = environ.get('DATABASE_PATH') or database_path
 telegram_api_secret = environ.get('TELEGRAM_API_SECRET') or telegram_api_secret

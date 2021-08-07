@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from functions import luck
 from datetime import datetime
-import unittest   # The test framework
+import unittest
 
 class Test_Functions_Luck(unittest.TestCase):
     def test_get_luck(self):
