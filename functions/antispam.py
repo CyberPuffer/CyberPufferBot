@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from re import search
 from utils import log
 from distutils.version import LooseVersion
 from telegram import __version__ as ptb_version
-
 logger = log.get_logger(name = 'AntiSpam')
 
 def anti_tgstat_bot(update, context):
+    from re import search
     is_join = False
     if 'status' in update.chat_member.difference():
         is_join = update.chat_member.difference()['status'] == ('left', 'member')
@@ -24,7 +23,7 @@ def anti_tgstat_bot(update, context):
 
 if LooseVersion(ptb_version) < LooseVersion('13.4'):
     logger.error('AntiSpam requires PTB version >= 13.4, current version is {}, please consider upgrade.'.format(ptb_version))
-    channel_handler = None
+    handler = None
 else:
     from telegram.ext import ChatMemberHandler
-    channel_handler = ChatMemberHandler(anti_tgstat_bot, chat_member_types = 1)
+    handler = ChatMemberHandler(anti_tgstat_bot, chat_member_types = 1)

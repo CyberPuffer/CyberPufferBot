@@ -8,12 +8,15 @@ logger = log.get_logger(name = 'Config')
 proxy_url = None
 database_path = None
 telegram_api_secret = None
+enabled_functions = []
 if (path.exists('conf/config.ini')):
     config = ConfigParser()
     config.read('conf/config.ini')
     proxy_url = config.get('Bot', 'proxy_url')
     database_path = config.get('Bot', 'database_path')
     telegram_api_secret = config.get('Telegram', 'telegram_api_secret')
+    enabled_functions = config.get('Bot', 'enabled_functions').split(' ')
+    auto_delete_timer = int(config.get('Bot', 'auto_delete_timer'))
 proxy_url = environ.get('HTTPS_PROXY') or proxy_url
 database_path = environ.get('DATABASE_PATH') or database_path
 telegram_api_secret = environ.get('TELEGRAM_API_SECRET') or telegram_api_secret

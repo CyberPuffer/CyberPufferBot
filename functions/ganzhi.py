@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from functions.zhdate import ZhDate
-from datetime import datetime
 
 def get_ganzhi(date):
+    from functions.zhdate import ZhDate
+    from datetime import datetime
 
     gans = u'甲乙丙丁戊己庚辛壬癸'
     zhis = u'子丑寅卯辰巳午未申酉戌亥'

@@ -1,9 +1,10 @@
-from utils import log, config
+from utils import log
 
 logger = log.get_logger(name = 'Keyword')
 
 class reply:
     def __init__(self, message):
+        from utils import config
         self.type = None
         for word in config.word_list:
             if word in message:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from binascii import crc32, unhexlify
 
 def get_luck(uid, date):
+    from binascii import crc32, unhexlify
     seed = uid + date.year + date.month + date.day + (date.hour + 1) // 2
     width = seed.bit_length()
     width += 8 - ((width % 8) or 8)

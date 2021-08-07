@@ -1,11 +1,11 @@
 from utils import log, config
-import sqlite3
 
 logger = log.get_logger(name = 'Database')
 
 def init_con(db_file):
+	from sqlite3 import connect
 	con = None
-	con = sqlite3.connect(db_file)
+	con = connect(db_file)
 	return con
 
 def check_database():
