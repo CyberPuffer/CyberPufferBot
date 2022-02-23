@@ -1,8 +1,9 @@
+from utils import globals, config
+
 def delete_message(context):
     context.bot.delete_message(context.job.context['chat_id'], context.job.context['message_id'])
 
 def auto_delete(context, reply):
-    from utils import globals, config
     timeout = config.auto_delete_timer
     if timeout > 0 and globals.webhook == False:
         for message in reply:

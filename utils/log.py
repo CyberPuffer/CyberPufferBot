@@ -1,7 +1,8 @@
+from coloredlogs import install 
+from logging import getLogger
+
 loggers = {}
 def get_logger(name=None):
-    from coloredlogs import install 
-    from logging import getLogger
     global loggers
     if not name: name = __name__
     if loggers.get(name):

@@ -4,3 +4,6 @@ PySocks
 python-telegram-bot==12.6.1; python_version < '3'
 configparser; python_version < '3'
 win_inet_pton; python_version < '3' and sys_platform == 'win32'
+pynacl
+requests
+werkzeug
