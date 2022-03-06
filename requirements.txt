@@ -7,3 +7,5 @@ win_inet_pton; python_version < '3' and sys_platform == 'win32'
 pynacl
 requests
 werkzeug
+tomli
+tomli-w

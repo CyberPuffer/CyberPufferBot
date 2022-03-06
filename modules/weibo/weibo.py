@@ -25,7 +25,7 @@ def format_weibo_hotlist(hotlist, list_type='hot', num=None):
     return text
 
 def weibo(update, context):
-    from utils import messages
+    # from utils import messages
     if len(context.args) == 0:
         num = 10
     else:
@@ -38,7 +38,7 @@ def weibo(update, context):
     hotlist = get_weibo_hotlist()
     hotlist_text = format_weibo_hotlist(hotlist,num=num)
     reply = [context.bot.send_message(chat_id=update.effective_chat.id, text=hotlist_text)]
-    messages.auto_delete(context, reply)
+    # messages.auto_delete(context, reply)
 
 def get_handler():
     return CommandHandler('weibo', weibo)

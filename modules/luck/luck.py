@@ -13,12 +13,12 @@ def get_luck(uid, date):
     return luck_text
 
 def luck(update, context):
-    from utils import messages
+    # from utils import messages
     from datetime import datetime
     from .ganzhi import get_ganzhi
     luck_text = '\n'.join([get_luck(update.effective_user.id, datetime.now()),get_ganzhi(datetime.now())])
     reply = [context.bot.send_message(chat_id=update.effective_chat.id, text=luck_text)]
-    messages.auto_delete(context, reply)
+    # messages.auto_delete(context, reply)
 
 def register_global_command(name):
     from utils import globals

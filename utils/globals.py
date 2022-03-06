@@ -5,3 +5,5 @@ except ImportError:
 time_start = monotonic()
 global_commands = []
 webhook = False
+dispatcher = None
+config = None

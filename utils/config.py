@@ -1,32 +1,29 @@
-from os import path, environ
-from configparser import ConfigParser
-from utils import log
+def get_config(dispatcher, args):
+    from tomli import loads
+    channel_info = dispatcher.bot.get_chat(args.config_id)
+    if channel_info.pinned_message is None:
+        msg = dispatcher.bot.send_message(args.config_id, init_index(),protect_content=True)
+        dispatcher.bot.pin_chat_message(args.config_id,msg.message_id,disable_notification=True)
+        index = msg
+    else:
+        index = channel_info.pinned_message
+    return loads(index.text)
 
-logger = log.get_logger(name = 'Config')
+def init_index():
+    from tomli_w import dumps
+    index = {
+        'version': 0
+    }
+    return dumps(index)
 
-proxy_url = None
-database_path = None
-telegram_api_secret = None
-enabled_modules = []
-if (path.exists('config.ini')):
-    config = ConfigParser()
-    config.read('config.ini')
-    proxy_url = config.get('Bot', 'proxy_url')
-    database_path = config.get('Bot', 'database_path')
-    telegram_api_secret = config.get('Telegram', 'telegram_api_secret')
-    enabled_modules = config.get('Bot', 'enabled_modules')
-    auto_delete_timer = config.get('Bot', 'auto_delete_timer')
-    debug_signature = config.get('Admin', 'debug_signature')
-    debug_key = config.get('Admin', 'debug_key')
-    admin_user_id = config.get('Admin', 'admin_user_id')
-    cailianshe_channel_id = config.get('CaiLianShe', 'cailianshe_channel_id')
+def set_key():
+    pass
 
-proxy_url = environ.get('HTTPS_PROXY') or proxy_url
-database_path = environ.get('DATABASE_PATH') or database_path
-telegram_api_secret = environ.get('TELEGRAM_API_SECRET') or telegram_api_secret
-enabled_modules = environ.get('ENABLED_modules') or enabled_modules
-enabled_modules = enabled_modules.split(' ')
-auto_delete_timer = environ.get('AUTO_DELETE_TIMER') or auto_delete_timer
-auto_delete_timer = int(auto_delete_timer)
+def del_key():
+    pass
 
-assert telegram_api_secret, "Telegram API secret not found."
+def parse_index():
+    pass
+
+def find_message():
+    pass

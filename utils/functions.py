@@ -1,25 +1,6 @@
 from utils import log
-logger = log.get_logger(name = 'Functions')
 
-def start_all_jobs():
-    from threading import Thread
-    from utils.polling import polling
-    from modules.cailianshe.cailianshe import robot
-    shares = {}
-    p = Thread(target=polling,args=[shares])
-    p.start()
-    c = Thread(target=robot,args=[shares])
-    c.start()
-    job_list = [p,c]
-    return job_list
-def start_job():
-    pass
-def stop_job():
-    pass
-def stop_all_jobs(job_list):
-    for job in job_list:
-        # TODO: need some work here
-        pass
+logger = log.get_logger(name='Functions')
 
 def get_handler(name):
     # from importlib import __import__
@@ -71,9 +52,11 @@ def reload_funcs(dispatcher, name):
     unload_funcs(dispatcher, name)
     load_funcs(dispatcher, name)
 
-def load_all_funcs(dispatcher):
-    from utils import config
-    for name in config.enabled_modules:
+def load_all_funcs(dispatcher, args):
+    from utils import config, globals
+    conf = config.get_config(dispatcher, args)
+    globals.config = conf
+    for name in [n.strip() for n in conf['enabled_modules'].split(',')]:
         load_funcs(dispatcher, name)
 
 def list_funcs(dispatcher):

@@ -1,11 +1,6 @@
-from os import path, environ
-from json import load, loads
+from utils import globals
 
-word_list = None
-word_list_path = path.join(path.dirname(__file__), 'keyword_list.json')
-if (path.exists(word_list_path)):
-    with open(word_list_path, "r",encoding="utf-8") as fp:
-        word_list = load(fp)
+word_list = globals.config['keywords']
 
 class Reply:
     reply_type = None
@@ -14,18 +9,17 @@ class Reply:
     text = None
     sticker_id = None
     def __init__(self, message):
-        from utils import config
-        for word in word_list:
-            if word in message:
-                self.match = word
-                self.reply_type = word_list[word]['type']
+        for keyword in word_list:
+            if keyword['keyword'] in message:
+                self.match = keyword['keyword']
+                self.reply_type = keyword['type']
                 if self.reply_type == "forward":
-                    self.from_chat_id = word_list[word]['from_chat_id']
-                    self.message_id = word_list[word]['message_id']
+                    self.from_chat_id = keyword['from_chat_id']
+                    self.message_id = keyword['message_id']
                 elif self.reply_type == "plaintext":
-                    self.text = word_list[word]['text']
+                    self.text = keyword['text']
                 elif self.reply_type == "sticker":
-                    self.sticker_id = word_list[word]['sticker_id']
+                    self.sticker_id = keyword['sticker_id']
                 else:
                     pass
                 break

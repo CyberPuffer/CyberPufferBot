@@ -6,7 +6,7 @@ __pycache__/
 # VSCode files
 .vscode/
 
-# Config files
-*.ini
-*.json
-!*.sample.*
+# Visual Studio files
+.vs/
+*.sln
+*.pyproj
