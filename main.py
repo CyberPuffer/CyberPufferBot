@@ -1,13 +1,24 @@
 def main():
     from argparse import ArgumentParser
+    from os import environ
     parser = ArgumentParser(
         prog='CyberPuffer', description='CyberPuffer - Just yet another telegram bot')
-    parser.add_argument('--secret', '-s', dest='api_secret', required=True)
-    parser.add_argument('--config', '-c', dest='config_id', required=True)
+    parser.add_argument('--secret', '-s', dest='api_secret')
+    parser.add_argument('--config', '-c', dest='config_id')
     parser.add_argument('--proxy', '-x', dest='proxy')
     parser.add_argument('--verbose', '-v', dest='verbose', action='store_true')
     parser.add_argument('--version', action='version', version='%(prog)s 2.0')
     args = parser.parse_args()
+    if args.api_secret is None:
+        try:
+            args.api_secret = environ['API_SECRET']
+        except KeyError:
+            raise ValueError('Telegram API secret not specific')
+    if args.config_id is None:
+        try:
+            args.config_id = environ['CONFIG_ID']
+        except KeyError:
+            raise ValueError('Config channel id not specific')
     start_all_jobs(args)
 
 def start_all_jobs(args):
