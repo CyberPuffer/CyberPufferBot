@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-from telegram.ext import CommandHandler
-def uptime(update, context):
-    from utils import globals
+def uptime(message: str, sender: dict):
+    from utils import global_vars
     from humanfriendly import format_timespan
     try:
         from time import monotonic
     except ImportError:
         from time import clock as monotonic
     time_now = monotonic() 
-    time_text = format_timespan(int(time_now - globals.time_start))\
+    time_text = format_timespan(int(time_now - global_vars.time_start))\
         .replace('years',u'年').replace('year',u'年')\
         .replace('months',u'个月').replace('month',u'个月')\
         .replace('weeks',u'周').replace('week',u'周')\
@@ -18,8 +17,4 @@ def uptime(update, context):
         .replace('seconds',u'秒').replace('second',u'秒')\
         .replace('and ','').replace(',','')
     text = u"咱已经正常运行了 {}".format(time_text)
-    reply = [context.bot.send_message(chat_id=update.effective_chat.id, text=text)]
-    # messages.auto_delete(context, reply)
-
-def get_handler():
-    return CommandHandler('uptime', uptime)
+    return (text, sender)

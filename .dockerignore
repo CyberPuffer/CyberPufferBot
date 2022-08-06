@@ -1,0 +1,19 @@
+# Docker files
+Dockerfile
+.dockerignore
+
+# Git files
+.git/
+.gitignore
+
+# Misc files
+README.md
+tests/
+
+# Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# VSCode files
+.vscode/

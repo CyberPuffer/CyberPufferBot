@@ -1,13 +1,13 @@
 from telegram.ext import MessageHandler, Filters
 from base64 import b64encode
-from utils import globals
+from utils import global_vars
 
 def quick_check(update):
     # Filter blank message
     if update.message is None:
         return True
     # Check debug command
-    dbg_sig = b64encode(bytes(globals.config['debug_signature'],'UTF-8'), altchars=b'-_').decode('ASCII')
+    dbg_sig = b64encode(bytes(global_vars.telegram_config['debug_signature'],'UTF-8'), altchars=b'-_').decode('ASCII')
     if dbg_sig in update.message.text:
         return True
     if not update.message.text.startswith("/"):
@@ -40,8 +40,4 @@ def keyword(update, context):
         # messages.auto_delete(context, reply)
 
 def get_handler():
-    if len(globals.global_commands) == 0:
-        return MessageHandler(Filters.text & (~Filters.command), keyword)
-    else:
-        cmd_regex = '|'.join(['^/'+ c for c in globals.global_commands])
-        return MessageHandler(Filters.text & (~Filters.command) | Filters.regex(cmd_regex), keyword)
+    return MessageHandler(Filters.text & (~Filters.command), keyword)

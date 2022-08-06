@@ -349,6 +349,3 @@ class ZhDate():
         return ZhDate.decode(
             CHINESEYEARCODE[year - 1900]
         )
-
-
-

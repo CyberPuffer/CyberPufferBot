@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from telegram.ext import CommandHandler
 
 def get_luck(uid, date):
     from binascii import crc32, unhexlify
@@ -12,24 +11,8 @@ def get_luck(uid, date):
     luck_text = u'当前人品：{}{}'.format(u'★' * luck_level, u'☆' * (5 - luck_level))
     return luck_text
 
-def luck(update, context):
-    # from utils import messages
+def luck(message, sender):
     from datetime import datetime
     from .ganzhi import get_ganzhi
-    luck_text = '\n'.join([get_luck(update.effective_user.id, datetime.now()),get_ganzhi(datetime.now())])
-    reply = [context.bot.send_message(chat_id=update.effective_chat.id, text=luck_text)]
-    # messages.auto_delete(context, reply)
-
-def register_global_command(name):
-    from utils import globals
-    if name in globals.global_commands:
-        return True
-    else:
-        globals.global_commands.append(name)
-        return False
-
-def get_handler():
-    if not register_global_command('luck'):
-        return CommandHandler('luck', luck), {'reload':['keyword']}
-    else:
-        return CommandHandler('luck', luck)
+    luck_text = '\n'.join([get_luck(sender['user_id'], datetime.now()),get_ganzhi(datetime.now())])
+    return (luck_text, sender)

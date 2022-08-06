@@ -1,4 +1,4 @@
-from utils import config, log, globals
+from utils import config, log, global_vars
 logger = log.get_logger(name = 'WeatherAlarm')
 
 def robot(args):
@@ -7,7 +7,7 @@ def robot(args):
     from time import sleep
     while True:
         try:
-            bot = globals.dispatcher.bot
+            bot = global_vars.dispatcher.bot
         except:
             logger.warning('Get dispatcher failed, retry after 1s')
             sleep(1)
@@ -32,10 +32,10 @@ def robot(args):
             time_list.append(alarm_time)
             if alarm_time > lasttime:
                 try:
-                    msg = bot.send_message(chat_id=globals.config['weather_channel_id'], text=alarm['description'])
+                    msg = bot.send_message(chat_id=global_vars.telegram_config['weather_channel_id'], text=alarm['description'])
                 except:
                     sleep(30)
-                    msg = bot.send_message(chat_id=globals.config['weather_channel_id'], text=alarm['description'])
+                    msg = bot.send_message(chat_id=global_vars.telegram_config['weather_channel_id'], text=alarm['description'])
            # notify_user(geocode, msg)
         lasttime = max(time_list)
         sleep(60)

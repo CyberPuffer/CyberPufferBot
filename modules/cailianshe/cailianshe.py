@@ -1,4 +1,4 @@
-from utils import config, log, globals
+from utils import config, log, global_vars
 logger = log.get_logger(name = 'CaiLianShe')
 
 def robot(args):
@@ -6,7 +6,7 @@ def robot(args):
     from time import time, sleep
     while True:
         try:
-            bot = globals.dispatcher.bot
+            bot = global_vars.dispatcher.bot
         except:
             logger.warning('Get dispatcher failed, retry after 1s')
             sleep(1)
@@ -27,7 +27,7 @@ def robot(args):
         for telegraph in update['data']['roll_data']:
             if telegraph['level'] < 'C':
                 logger.info(telegraph['level'] + ' ' + telegraph['title'])
-                bot.send_message(chat_id=globals.config['cailianshe_channel_id'], text=telegraph['content'])
+                bot.send_message(chat_id=global_vars.telegram_config['cailianshe_channel_id'], text=telegraph['content'])
         lasttime = max([telegraph['ctime'] for telegraph in update['data']['roll_data']])
         sleep(15)
 

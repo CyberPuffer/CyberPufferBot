@@ -1,49 +1,64 @@
 # Cyber Puffer - 赛博河豚🐡
 
-# Deploy with Docker:
+## Quick deploy:
+
+First create a channel and add the bot to the channel, 
+
+Then post the following settings, and pin that message.
 
 ```
-mkdir /path/to/conf
-cd /path/to/conf
+enabled_modules = "uptime, keyword, luck, weibo"
+
+# keyword reply example
+[[keywords]]
+keyword = "foo"
+type = "plaintext"
+text = "bar"
 ```
 
-Then copy contents from the sample config files and edit your own
-```
-editor config.ini
-editor keyword_list.json
-```
-```
-mkdir /path/to/database
-```
-```
-docker run -d \
---restart=always \
---name cyberpuffer \
--v /path/to/conf:/var/bot/conf \
--v /path/to/database:/database/path/in/config \
-pufferoverflow/cyberpuffer
-```
+And now we can deploy the bot using *docker-compose*
 
-## Usage:
-
+`docker-compose.yml`
 ```
-pip install -r requirements.txt
-mv conf/config.sample.ini conf/config.ini
-mv conf/keyword_list.sample.json conf/keyword_list.json
-editor conf/config.ini
-editor conf/keyword_list.json
-mkdir /path/to/database
-python bot.py
+version: "2.4"
+services:
+  cyberpuffer:
+    image: pufferoverflow/cyberpuffer:latest
+    restart: always
+    environment:
+      API_SECRET: telegram:TELEGRAM_API_TOKEN:CONFIG_CHANNEL_ID
+    read_only: true
+    ipc: none
+    mem_limit: 64M
+    memswap_limit: 64M
+    network_mode: bridge
 ```
+Replace `TELEGRAM_API_TOKEN` and `CONFIG_CHANNEL_ID` with your own
 
 ## Commands:
 
- - `/start`   Not implemented yet
- - `/uptime`  Reply with bot uptime
- - `/stats`   Reply with how many people bot has seen
- - `/luck`    Get today's luck level (global command)
+ - `/uptime`        Reply with bot uptime
+ - `/luck`          Get today's luck level
+ - `/weibo [num]`   Get Weibo's Trending list (Get top 10 by default)
 
 ## Functions:
 
  - Reply to keywords with text, sticker or forwarded message
- - Auto detect and ban userbots from `tgstat.com`
+
+## Add your own functions
+
+First make a directory with your mod name and place your program under `/modules/`
+
+The entrance file name should be the same with directory name.
+
+Then the bot will call the function with the same name with 2 arguments `message` and `sender` and expect the same return.
+
+Example: `/modules/hello/hello.py`
+```
+def hello(message: str, sender: dict):
+    reply = "Hello World!"
+    receiver = sender
+    return reply, receiver
+```
+
+Finally add your module name to the `enabled_modules` section in the config message and restart the bot. The bot should automatically load your function and register the corresponding command.

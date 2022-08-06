@@ -1,6 +1,6 @@
-from utils import globals
+from utils import global_vars
 
-word_list = globals.config['keywords']
+word_list = global_vars.telegram_config['keywords']
 
 class Reply:
     reply_type = None
