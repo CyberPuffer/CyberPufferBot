@@ -12,7 +12,7 @@ enabled_modules = "uptime, keyword, luck, weibo"
 # keyword reply example
 [[keywords]]
 keyword = "foo"
-type = "plaintext"
+type = "text"
 text = "bar"
 ```
 

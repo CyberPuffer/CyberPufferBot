@@ -2,109 +2,132 @@ from telegram import constants
 from telegram.ext import Updater
 from distutils.version import LooseVersion
 from telegram import __version__ as ptb_version
-from utils import global_vars, log
-logger = log.get_logger(name='Bot')
+from utils.global_vars import message_handler
+from utils.log import get_logger
+
+logger = get_logger(name='Telegram')
 
 def polling(args):
 
+    # Parse API secret
     api_config = args['config'].split(':')
-
-    # Get API secret
     api_secret = ':'.join(api_config[1:3])
+
+   # Init handler in global varibles
+    handler_name = 'Telegram:' + api_config[1]
+    message_handler[handler_name] = {}
 
     # Check config type
     try:
-        config_id = int(api_config[3])
+        config_path = int(api_config[3])
         config_type = 'cloud'
     except ValueError:
-        config_file = api_config[3]
+        config_path = api_config[3]
         config_type = 'local'
 
     # Proxy settings
     request_kwargs = {'proxy_url': args['proxy']} if args['proxy'] is not None else None
     
+    # Init dispatcher
     updater = Updater(token=api_secret, use_context=True, request_kwargs=request_kwargs)
     dispatcher = updater.dispatcher
-    global_vars.dispatcher = dispatcher
-    load_all_funcs(dispatcher, config_id)
+
+    # Register dispatcher and sender
+    message_handler[handler_name]['dispatcher'] = dispatcher
+
+    def sender(message, receiver):
+        return send_message(message, receiver, handler_name)
+    message_handler[handler_name]['sender'] = sender
+
+    # Load all modules
+    load_all_funcs(dispatcher, handler_name, config_type, config_path)
+
+    # Start polling
     if LooseVersion(ptb_version) >= LooseVersion('13.5'):
         updater.start_polling(allowed_updates=constants.UPDATE_ALL_TYPES)
     else:
         logger.warn('PTB version < 13.5, not all update types are listening')
         updater.start_polling()
 
-def get_cloud_config(dispatcher, config_id):
-    from tomli import loads
-    channel_info = dispatcher.bot.get_chat(config_id)
-    if channel_info.pinned_message is None:
-        msg = dispatcher.bot.send_message(config_id, init_index(),protect_content=True)
-        dispatcher.bot.pin_chat_message(config_id,msg.message_id,disable_notification=True)
-        index = msg
-    else:
-        index = channel_info.pinned_message
-    return loads(index.text)
+def load_all_funcs(dispatcher, handler_name, config_type, config_id):
+    from traceback import print_exc
 
-def init_index():
+    # Load module config
+    conf = get_config(dispatcher, config_type, config_id)
+    message_handler[handler_name]['config'] = conf
+
+    # Load all modules handlers
+    for name in [n.strip() for n in conf['enabled_modules'].split(',')]:
+        try:
+            func = __import__('modules.{name}.{name}'.format(name=name))
+            handler = load_func(getattr(getattr(getattr(func, name), name),name), name, handler_name)
+            dispatcher.add_handler(handler)
+            logger.info('Module {} loaded'.format(name))
+        except:
+            print_exc()
+            logger.warning('Module {} failed to load'.format(name))
+
+def load_func(func, name, handler_name):
+    from telegram.ext import CommandHandler, MessageHandler, Filters
+    def wrapped_func(update, context):
+        sender = {
+            "user_id": update.effective_chat.id,
+            "source": handler_name
+            }
+        reply_message, receiver = func(update.message.text, sender)
+        reply = send_message(reply_message,receiver,handler_name)
+        return reply
+    if name == 'keyword':
+        return MessageHandler(Filters.text & (~Filters.command), wrapped_func)
+    else:
+        return CommandHandler(name, wrapped_func)
+
+def get_config(dispatcher, config_type, config_id):
+    from tomli import loads, load
+    if config_type == 'cloud':
+        channel_info = dispatcher.bot.get_chat(config_id)
+        if channel_info.pinned_message is None:
+            msg = dispatcher.bot.send_message(config_id, init_config())
+            dispatcher.bot.pin_chat_message(config_id,msg.message_id,disable_notification=True)
+            index = msg
+        else:
+            index = channel_info.pinned_message
+        return loads(index.text)
+    elif config_type == 'local':
+        with open(config_id, encoding="utf-8") as f:
+            return load(f)
+    else:
+        raise NotImplementedError("Config type not supported")
+
+def init_config():
     from tomli_w import dumps
     index = {
-        'version': 0
+        'enabled_modules': "uptime, keyword, luck, weibo"
     }
     return dumps(index)
 
-def get_handler(name):
-    # from importlib import __import__
-    func = __import__('modules.{name}.{name}'.format(name=name))
-    try:
-        return getattr(getattr(func, name), name).get_handler()
-    except AttributeError:
-        pass
-    try:
-        return load_generic_func(getattr(getattr(getattr(func, name), name),name), name)
-    except:
-        pass
+def send_message(message, receiver, handler_name):
+    from utils.global_vars import message_handler
+    context = message_handler[handler_name]['dispatcher']
+    if 'type' in receiver.keys():
+        if receiver['type'] == 'text':
+            reply = context.bot.send_message(chat_id=receiver["user_id"], text=message)
+        elif receiver['type'] == 'sticker':
+            reply = context.bot.send_sticker(chat_id=receiver["user_id"], sticker=message)
+        elif receiver['type'] == 'forward':
+            sep, from_chat_id, message_id = message.partition('@')
+            reply = context.bot.forward_message(chat_id=receiver["user_id"], from_chat_id=from_chat_id, message_id=message_id)
+        else:
+            pass
+    else:
+        reply = context.bot.send_message(chat_id=receiver["user_id"], text=message)
+    return reply
 
 def find_handler(dispatcher, name):
     default_handler_group = dispatcher.handlers[0]
     for handler in default_handler_group:
         if handler.callback.__name__ == name:
             return handler
-
-def load_funcs(dispatcher, name):
-    from traceback import print_exc
-    try:
-        handler = get_handler(name)
-        if handler is not None:
-            dispatcher.add_handler(handler)
-            logger.info('Module {} loaded'.format(name))
-        else:
-            logger.warning('Module {} failed to load, handler not found'.format(name))
-            return False
-    except TypeError:
-        handler_r, action = handler
-        if handler_r is not None:
-            dispatcher.add_handler(handler_r)
-            logger.info('Module {} loaded'.format(name))
-        if 'reload' in action.keys():
-            for item in action['reload']:
-                logger.warning('Module {} triggered a reload for module {}'.format(name, item))
-                reload_funcs(dispatcher, item)
-    except Exception:
-        print_exc()
-        logger.warning('Module {} failed to load'.format(name))
-        return False
-    return True
-
-def load_generic_func(func, name):
-    from telegram.ext import CommandHandler
-    def wrapped_func(update, context):
-        sender = {
-            "user_id": update.effective_chat.id,
-            "source": "Telegram"
-            }
-        reply_message, reply_user = func(update.message.text, sender)
-        reply = [context.bot.send_message(chat_id=reply_user["user_id"], text=reply_message)]
-        return reply
-    return CommandHandler(name, wrapped_func)
 
 def unload_funcs(dispatcher, name):
     handler = find_handler(dispatcher,name)
@@ -115,17 +138,6 @@ def unload_funcs(dispatcher, name):
     else:
         logger.warning('{} failed to unload'.format(name))
         return False
-
-def reload_funcs(dispatcher, name):
-    unload_funcs(dispatcher, name)
-    load_funcs(dispatcher, name)
-
-def load_all_funcs(dispatcher, config_id):
-    from utils import global_vars
-    conf = get_cloud_config(dispatcher, config_id)
-    global_vars.telegram_config = conf
-    for name in [n.strip() for n in conf['enabled_modules'].split(',')]:
-        load_funcs(dispatcher, name)
 
 def list_funcs(dispatcher):
     default_handler_group = dispatcher.handlers[0]

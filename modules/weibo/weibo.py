@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from telegram.ext import CommandHandler
 
 def get_weibo_hotlist():
     from requests import session
@@ -24,21 +23,12 @@ def format_weibo_hotlist(hotlist, list_type='hot', num=None):
             break
     return text
 
-def weibo(update, context):
-    # from utils import messages
-    if len(context.args) == 0:
+def weibo(message, sender):
+    sep, cmd, args = message.partition(' ')
+    try:
+        num = int(args)
+    except ValueError:
         num = 10
-    else:
-        try:
-            num = int(context.args[0])
-        except ValueError:
-            if context.args[0] == 'all':
-                num = None
-
     hotlist = get_weibo_hotlist()
     hotlist_text = format_weibo_hotlist(hotlist,num=num)
-    reply = [context.bot.send_message(chat_id=update.effective_chat.id, text=hotlist_text)]
-    # messages.auto_delete(context, reply)
-
-def get_handler():
-    return CommandHandler('weibo', weibo)
+    return hotlist_text, sender

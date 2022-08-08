@@ -15,4 +15,4 @@ def luck(message, sender):
     from datetime import datetime
     from .ganzhi import get_ganzhi
     luck_text = '\n'.join([get_luck(sender['user_id'], datetime.now()),get_ganzhi(datetime.now())])
-    return (luck_text, sender)
+    return luck_text, sender
